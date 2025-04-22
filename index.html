@@ -3,820 +3,559 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorateur de Villes de Côte d'Ivoire</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
+    <title>Évolution des technologies 3D sur le Web</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        
         body {
-            padding: 20px;
-            /* Nouveau design de fond avec un dégradé élégant */
-            background: linear-gradient(135deg, #e1f0e5 0%, #f5f7f7 50%, #fff1e3 100%);
-            color: #333;
-            background-attachment: fixed;
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
-        .container {
+        
+        .slide {
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        .timeline {
+            position: relative;
             max-width: 1200px;
             margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(5px);
         }
-        h1 {
-            color: #FF8C00;
-            margin-bottom: 20px;
-            text-align: center;
-            font-size: 2.2em;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid #00843D;
-            padding-bottom: 15px;
-        }
-        .flag-colors {
-            height: 8px;
-            display: flex;
-            width: 200px;
-            margin: -5px auto 20px;
-            border-radius: 4px;
-            overflow: hidden;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .flag-orange {
-            background-color: #FF8C00;
-            width: 33.33%;
-            height: 100%;
-        }
-        .flag-white {
-            background-color: white;
-            width: 33.33%;
-            height: 100%;
-        }
-        .flag-green {
-            background-color: #00843D;
-            width: 33.33%;
-            height: 100%;
-        }
-        .search-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        #location-search {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        #location-search:focus {
-            border-color: #FF8C00;
-            outline: none;
-            box-shadow: 0 0 5px rgba(255, 140, 0, 0.3);
-        }
-        #search-button {
-            padding: 12px 20px;
-            background-color: #FF8C00;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        #search-button:hover {
-            background-color: #E67300;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .selection-container {
-            margin-bottom: 20px;
-        }
-        #city-select {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        #city-select:focus {
-            border-color: #00843D;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 132, 61, 0.3);
-        }
-        #map {
-            height: 550px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-            border: 3px solid #ddd;
-        }
-        .search-results {
-            background: white;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            max-height: 250px;
-            overflow-y: auto;
-            display: none;
+        
+        .timeline::after {
+            content: '';
             position: absolute;
-            width: calc(100% - 140px);
-            z-index: 1000;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 6px;
+            background-color: #4f46e5;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            margin-left: -3px;
         }
-        .search-result-item {
-            padding: 12px 15px;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
-            transition: all 0.2s ease;
+        
+        .container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%;
         }
-        .search-result-item:hover {
-            background-color: #f5f9ff;
-            padding-left: 20px;
+        
+        .container::after {
+            content: '';
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            right: -17px;
+            background-color: white;
+            border: 4px solid #4f46e5;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
         }
-        #no-results {
-            padding: 15px;
-            color: #777;
-            display: none;
-            text-align: center;
-            font-style: italic;
+        
+        .left {
+            left: 0;
         }
-        .section-title {
-            font-size: 18px;
-            color: #00843D;
-            margin-bottom: 8px;
-            font-weight: bold;
+        
+        .right {
+            left: 50%;
         }
-        .info-panel {
-            background-color: #f9f9f9;
-            border-left: 4px solid #FF8C00;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 0 8px 8px 0;
+        
+        .left::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            right: 30px;
+            border: medium solid white;
+            border-width: 10px 0 10px 10px;
+            border-color: transparent transparent transparent white;
         }
-        footer {
-            text-align: center;
-            margin-top: 20px;
-            color: #777;
-            font-size: 14px;
+        
+        .right::before {
+            content: " ";
+            height: 0;
+            position: absolute;
+            top: 22px;
+            width: 0;
+            z-index: 1;
+            left: 30px;
+            border: medium solid white;
+            border-width: 10px 10px 10px 0;
+            border-color: transparent white transparent transparent;
         }
-        .route-controls {
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        
+        .right::after {
+            left: -16px;
         }
-        .route-input {
-            flex-grow: 1;
-            min-width: 200px;
+        
+        .content {
+            padding: 20px 30px;
+            background-color: white;
+            position: relative;
+            border-radius: 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
         }
-        .route-input input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-        }
-        .route-input input:focus {
-            border-color: #00843D;
-            outline: none;
-        }
-        .route-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        .route-button {
-            padding: 12px 20px;
-            background-color: #00843D;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
+        
+        .tech-card {
             transition: all 0.3s ease;
         }
-        .route-button:hover {
-            background-color: #006E32;
-            transform: translateY(-2px);
+        
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        .route-button.clear {
-            background-color: #d9534f;
+        
+        .comparison-table {
+            border-collapse: collapse;
+            width: 100%;
         }
-        .route-button.clear:hover {
-            background-color: #c9302c;
-        }
-        #route-panel {
-            margin-top: 15px;
-            display: none;
-            background-color: #fff;
+        
+        .comparison-table th, .comparison-table td {
             border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 12px;
+            text-align: left;
         }
-        #route-instructions {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 10px;
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
-        #route-instructions ul {
-            list-style-type: none;
-            padding-left: 10px;
-        }
-        #route-instructions li {
-            margin-bottom: 8px;
-            padding-bottom: 8px;
-            border-bottom: 1px dotted #eee;
-        }
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-            .search-results {
-                width: calc(100% - 100px);
-            }
-            .route-controls {
-                flex-direction: column;
-            }
-        }
-        .leaflet-routing-container {
-            background-color: white;
-            padding: 10px;
-            border-radius: 8px;
-            max-height: 300px;
-            overflow-y: auto;
+        
+        .comparison-table th {
+            background-color: #4f46e5;
+            color: white;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Explorateur de Villes de Côte d'Ivoire</h1>
-        
-        <div class="flag-colors">
-            <div class="flag-orange"></div>
-            <div class="flag-white"></div>
-            <div class="flag-green"></div>
-        </div>
-        
-        <div class="info-panel">
-            <div class="section-title">Comment utiliser</div>
-            <p>Recherchez directement une ville ou sélectionnez-en une dans la liste pour voir sa carte. Utilisez la fonction d'itinéraire pour planifier vos déplacements entre deux points.</p>
-        </div>
-        
-        <!-- Recherche -->
-        <div class="section-title">Recherche de ville</div>
-        <div class="search-container">
-            <input type="text" id="location-search" placeholder="Rechercher une ville...">
-            <button id="search-button">Rechercher</button>
-        </div>
-        <div id="search-results" class="search-results">
-            <div id="no-results">Aucune ville correspondante trouvée</div>
-        </div>
-        
-        <!-- Sélection par liste déroulante -->
-        <div class="section-title">Sélection par district</div>
-        <div class="selection-container">
-            <select id="city-select">
-                <option value="">-- Sélectionnez une ville --</option>
-                
-                <!-- District d'Abidjan -->
-                <optgroup label="District d'Abidjan">
-                  <option value="Abobo,5.43081,-4.06229">Abobo</option>
-                  <option value="Adjamé,5.36883,-4.01966">Adjamé</option>
-                  <option value="Attécoubé,5.36546,-4.05270">Attécoubé</option>
-                  <option value="Cocody,5.38215,-3.96512">Cocody</option>
-                  <option value="Koumassi,5.29799,-3.93604">Koumassi</option>
-                  <option value="Marcory,5.29443,-3.97855">Marcory</option>
-                  <option value="Plateau,5.327982,-4.024393">Plateau</option>
-                  <option value="Port-Bouët,5.26734,-3.92144">Port-Bouët</option>
-                  <option value="Treichville,5.29369,-4.01263">Treichville</option>
-                  <option value="Yopougon,5.3177,-4.0769">Yopougon</option>
-                  <option value="Bingerville,5.3482,-3.8258">Bingerville</option>
-                  <option value="Songon,5.3352,-4.2028">Songon</option>
-                </optgroup>
-                
-                <!-- District des Lagunes -->
-                <optgroup label="District des Lagunes">
-                  <option value="Dabou,5.3238,-4.3722">Dabou</option>
-                  <option value="Jacqueville,5.20763,-4.41951">Jacqueville</option>
-                  <option value="Grand-Bassam,5.2544,-4.2469">Grand-Bassam</option>
-                  <option value="Bonoua,5.27361,-3.59674">Bonoua</option>
-                  <option value="Tiassalé,5.89565,-4.82506">Tiassalé</option>
-                  <option value="Adiaké,5.2363,-3.2961">Adiaké</option>
-                  <option value="Aboisso,5.7137,-3.0930">Aboisso</option>
-                  <option value="Alépé,5.49664,-3.66381">Alépé</option>
-                </optgroup>
-                
-                <!-- District de Yamoussoukro -->
-                <optgroup label="District de Yamoussoukro">
-                  <option value="Yamoussoukro,6.8200,-5.2776">Yamoussoukro</option>
-                </optgroup>
-                
-                <!-- District des Montagnes -->
-                <optgroup label="District des Montagnes">
-                  <option value="Man,7.4103,-7.5504">Man</option>
-                  <option value="Danané,7.2634,-8.1543">Danané</option>
-                  <option value="Guiglo,6.4301,-7.5481">Guiglo</option>
-                  <option value="Toulepleu,6.58090,-8.41502">Toulepleu</option>
-                  <option value="Bangolo,7.01191,-7.48676">Bangolo</option>
-                  <option value="Duékoué,7.05839,-7.52246">Duékoué</option>
-                </optgroup>
-                
-                <!-- District du Sassandra-Marahoué -->
-                <optgroup label="District du Sassandra-Marahoué">
-                  <option value="Daloa,6.8870,-6.4530">Daloa</option>
-                  <option value="Lakota,5.8511,-5.6828">Lakota</option>
-                  <option value="Bouaflé,6.9802,-5.7458">Bouaflé</option>
-                  <option value="Zuenoula,7.42802,-6.05003">Zuénoula</option>
-                </optgroup>
-                
-                <!-- District de la Vallée du Bandama -->
-                <optgroup label="District de la Vallée du Bandama">
-                  <option value="Bouaké,7.6891,-5.0284">Bouaké</option>
-                  <option value="Béoumi,7.67454,-5.58273">Béoumi</option>
-                  <option value="Sakassou,7.45348,-5.29235">Sakassou</option>
-                  <option value="Katiola,8.0903,-5.1660">Katiola</option>
-                  <option value="Dabakala,8.36324,-4.42849">Dabakala</option>
-                </optgroup>
-                
-                <!-- District de la Comoé -->
-                <optgroup label="District de la Comoé">
-                  <option value="Abengourou,6.7269,-3.4968">Abengourou</option>
-                  <option value="Agnibilékrou,7.0649,-3.3624">Agnibilékrou</option>
-                  <option value="Tanda,7.80367,-3.16725">Tanda</option>
-                  <option value="Bondoukou,8.0745,-2.8017">Bondoukou</option>
-                  <option value="Bouna,9.26872,-2.99898">Bouna</option>
-                </optgroup>
-                
-                <!-- District du Woroba -->
-                <optgroup label="District du Woroba">
-                  <option value="Séguéla,7.96141,-6.67024">Séguéla</option>
-                  <option value="Mankono,8.0461,-6.0510">Mankono</option>
-                  <option value="Touba,8.28410,-7.68181">Touba</option>
-                </optgroup>
-                
-                <!-- District des Savanes -->
-                <optgroup label="District des Savanes">
-                  <option value="Korhogo,9.4581,-5.6316">Korhogo</option>
-                  <option value="Kong,9.14868,-4.61065">Kong</option>
-                  <option value="Ferkessédougou,9.5936,-5.1982">Ferkessédougou</option>
-                  <option value="Boundiali,9.52323,-6.48202">Boundiali</option>
-                  <option value="Tengréla,10.4749,-6.4189">Tengréla</option>
-                  <option value="Sinématiali,9.58408,-5.38403">Sinématiali</option>
-                  <option value="Odiénné,9.50443,-7.56194">Odiénné</option>
-                  <option value="Minignan,9.99648,-7.83669">Minignan</option>
-                </optgroup>
-                
-                <!-- District du Gôh-Djiboua -->
-                <optgroup label="District du Gôh-Djiboua">
-                  <option value="Gagnoa,6.1335,-5.9511">Gagnoa</option>
-                  <option value="Oumé,6.3818,-5.4180">Oumé</option>
-                  <option value="Zouan-Hounien,6.91983,-8.20892">Zouan-Hounien</option>
-                </optgroup>
-                
-                <!-- District du Lacs -->
-                <optgroup label="District du Lacs">
-                  <option value="Tiapoum,5.2578,-2.9114">Tiapoum</option>
-                  <option value="Agboville,5.9308,-4.2131">Agboville</option>
-                  <option value="Alépé,5.49661,-3.66389">Alépé</option>
-                </optgroup>
-                
-                <!-- District du Bas-Sassandra -->
-                <optgroup label="District du Bas-Sassandra">
-                  <option value="San-Pédro,4.7590,-6.6464">San-Pédro</option>
-                  <option value="Sassandra,5.3306,-6.3214">Sassandra</option>
-                  <option value="Tabou,4.41628,-7.35592">Tabou</option>
-                </optgroup>
-            </select>
-        </div>
-        
-        <!-- Contrôles d'itinéraire -->
-        <div class="section-title">Planification d'itinéraire</div>
-        <div class="route-controls">
-            <div class="route-input">
-                <input type="text" id="start-point" placeholder="Point de départ (cliquez sur la carte ou entrez une adresse)">
-            </div>
-            <div class="route-input">
-                <input type="text" id="end-point" placeholder="Point d'arrivée (cliquez sur la carte ou entrez une adresse)">
-            </div>
-            <div class="route-buttons">
-                <button id="calculate-route" class="route-button">Calculer l'itinéraire</button>
-                <button id="clear-route" class="route-button clear">Effacer</button>
+    <!-- Slide 1: Titre -->
+    <div class="slide flex flex-col items-center justify-center text-center">
+        <div class="max-w-4xl mx-auto">
+            <h1 class="text-5xl font-bold text-indigo-700 mb-6">L'évolution des technologies 3D sur le Web</h1>
+            <h2 class="text-3xl text-gray-700 mb-8">De 3DML aux frameworks modernes</h2>
+            <div class="flex justify-center space-x-4">
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">3DML</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">A-Frame</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">Three.js</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">Babylon.js</span>
             </div>
         </div>
-        
-        <!-- Conteneur de carte -->
-        <div class="section-title">Carte</div>
-        <div id="map"></div>
-        
-        <footer>
-            Explorateur de Villes de Côte d'Ivoire © 2025
-        </footer>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.js"></script>
-    <script>
-        // Initialisation de la carte centrée sur la Côte d'Ivoire
-        const map = L.map('map').setView([7.54, -5.54], 7);
-        
-        // Ajout des tuiles OpenStreetMap
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
+    <!-- Slide 2: Introduction -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Introduction</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <p class="text-lg text-gray-700 mb-6">
+                        L'histoire de la 3D sur le Web est marquée par des technologies pionnières qui ont ouvert la voie aux expériences immersives que nous connaissons aujourd'hui.
+                    </p>
+                    <p class="text-lg text-gray-700 mb-6">
+                        Parmi ces technologies, <span class="font-bold text-indigo-600">3DML (3D Markup Language)</span> occupe une place particulière comme l'un des premiers langages dédiés à la création de mondes 3D directement dans le navigateur.
+                    </p>
+                    <div class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500">
+                        <p class="text-indigo-800">
+                            <i class="fas fa-lightbulb text-indigo-500 mr-2"></i>
+                            <strong>Saviez-vous ?</strong> 3DML a été développé en 1998 par Flatland Online, bien avant que les navigateurs ne supportent nativement la 3D.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-center">
+                    <img src="https://via.placeholder.com/500x300?text=Evolution+Web+3D" alt="Évolution du Web 3D" class="rounded-lg shadow-xl">
+                </div>
+            </div>
+        </div>
+    </div>
 
-        // Marqueur pour la ville sélectionnée
-        let marker;
-        
-        // Variable pour stocker le contrôle d'itinéraire
-        let routeControl = null;
-        
-        // Points de l'itinéraire
-        let startPoint = null;
-        let endPoint = null;
-        let startMarker = null;
-        let endMarker = null;
-        
-        // Extraction des données de toutes les villes pour la fonctionnalité de recherche
-        const cityData = [];
-        const citySelect = document.getElementById('city-select');
-        const options = citySelect.querySelectorAll('option');
-        
-        options.forEach(option => {
-            if (option.value && option.value !== "") {
-                const [name, lat, lng] = option.value.split(',');
-                cityData.push({
-                    name: option.textContent,
-                    district: option.parentNode.label,
-                    value: option.value,
-                    lat: parseFloat(lat),
-                    lng: parseFloat(lng)
+    <!-- Slide 3: Qu'est-ce que 3DML ? -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Qu'est-ce que 3DML ?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Définition</h3>
+                        <p class="text-gray-700">
+                            3DML (3D Markup Language) était un langage de balisage XML-like conçu pour créer des mondes virtuels 3D navigables dans un navigateur web.
+                        </p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Caractéristiques</h3>
+                        <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                            <li>Syntaxe similaire à HTML</li>
+                            <li>Description déclarative des scènes 3D</li>
+                            <li>Optimisé pour le web avec des fichiers légers</li>
+                            <li>Support des textures, animations et interactions</li>
+                            <li>Nécessitait le plugin Flatland Rover</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="bg-white p-6 rounded-lg shadow-md h-full">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Exemple de code 3DML</h3>
+                        <div class="code-block">
+                            <pre><code>&lt;world name="monde3d"&gt;
+    &lt;block name="sol" position="0,0,0" size="10,1,10" texture="grass.jpg"/&gt;
+    &lt;block name="mur1" position="0,0,5" size="10,5,1" texture="brick.jpg"/&gt;
+    &lt;object name="arbre" position="3,0,3" model="tree.3dml"/&gt;
+    &lt;spotlight name="lumière" position="5,10,5" target="0,0,0"/&gt;
+&lt;/world&gt;</code></pre>
+                        </div>
+                        <p class="text-gray-600 mt-4 text-sm">
+                            Cet exemple montre comment une simple scène 3D pouvait être décrite avec 3DML, avec des éléments comme des blocs, des objets et des lumières.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: Flatland Rover -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Flatland Rover - Le navigateur 3D</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Qu'était Flatland Rover ?</h3>
+                        <p class="text-gray-700 mb-4">
+                            Flatland Rover était un navigateur 3D spécialisé qui permettait d'afficher des mondes créés en 3DML. Il fonctionnait comme un plugin pour les navigateurs web traditionnels.
+                        </p>
+                        <p class="text-gray-700">
+                            Contrairement aux solutions modernes qui utilisent WebGL, Flatland Rover avait son propre moteur de rendu 3D.
+                        </p>
+                    </div>
+                    <div class="bg-indigo-50 p-6 rounded-lg">
+                        <h4 class="font-semibold text-indigo-800 mb-2">Fonctionnalités clés :</h4>
+                        <ul class="list-disc pl-6 text-indigo-700 space-y-1">
+                            <li>Navigation intuitive dans les mondes 3D</li>
+                            <li>Support des interactions utilisateur</li>
+                            <li>Affichage en temps réel</li>
+                            <li>Optimisation pour les connexions lentes</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="flex flex-col items-center justify-center">
+                    <img src="https://via.placeholder.com/400x300?text=Flatland+Rover" alt="Flatland Rover" class="rounded-lg shadow-xl mb-6">
+                    <a href="http://original.flatland.com/" target="_blank" class="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
+                        <i class="fas fa-external-link-alt mr-2"></i> Visiter le site original
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Chronologie des technologies 3D web -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Chronologie des technologies 3D web</h2>
+            <div class="timeline">
+                <div class="container left">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">1998</h3>
+                        <p>Création de 3DML et Flatland Rover</p>
+                    </div>
+                </div>
+                <div class="container right">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2000</h3>
+                        <p>VRML (Virtual Reality Modeling Language)</p>
+                    </div>
+                </div>
+                <div class="container left">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2006</h3>
+                        <p>Adobe Flash 3D (via Papervision3D)</p>
+                    </div>
+                </div>
+                <div class="container right">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2011</h3>
+                        <p>WebGL standardisé - révolution du 3D sans plugin</p>
+                    </div>
+                </div>
+                <div class="container left">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2015</h3>
+                        <p>Three.js devient populaire</p>
+                    </div>
+                </div>
+                <div class="container right">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2016</h3>
+                        <p>Sortie d'A-Frame par Mozilla</p>
+                    </div>
+                </div>
+                <div class="container left">
+                    <div class="content">
+                        <h3 class="font-bold text-lg">2020s</h3>
+                        <p>WebGPU et WebXR émergent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Les frameworks modernes -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Les frameworks modernes de 3D web</h2>
+            <p class="text-xl text-gray-700 mb-8">Aujourd'hui, plusieurs frameworks puissants permettent de créer des expériences 3D directement dans le navigateur sans nécessiter de plugins.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Three.js Card -->
+                <div class="tech-card bg-white rounded-lg overflow-hidden shadow-md">
+                    <div class="bg-gray-800 p-4">
+                        <h3 class="text-xl font-bold text-white">Three.js</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Bibliothèque JavaScript bas niveau pour créer des graphiques 3D avec WebGL.</p>
+                        <div class="flex items-center text-sm text-gray-600 mb-4">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span class="ml-2">+80k stars GitHub</span>
+                        </div>
+                        <a href="https://threejs.org/" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium">Visiter le site →</a>
+                    </div>
+                </div>
+                
+                <!-- A-Frame Card -->
+                <div class="tech-card bg-white rounded-lg overflow-hidden shadow-md">
+                    <div class="bg-gray-800 p-4">
+                        <h3 class="text-xl font-bold text-white">A-Frame</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Framework web VR basé sur Three.js avec une syntaxe HTML simplifiée, héritier spirituel de 3DML.</p>
+                        <div class="flex items-center text-sm text-gray-600 mb-4">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star-half-alt text-yellow-400 mr-1"></i>
+                            <span class="ml-2">+15k stars GitHub</span>
+                        </div>
+                        <a href="https://aframe.io/" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium">Visiter le site →</a>
+                    </div>
+                </div>
+                
+                <!-- Babylon.js Card -->
+                <div class="tech-card bg-white rounded-lg overflow-hidden shadow-md">
+                    <div class="bg-gray-800 p-4">
+                        <h3 class="text-xl font-bold text-white">Babylon.js</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-700 mb-4">Moteur 3D complet avec outils avancés pour jeux et applications complexes.</p>
+                        <div class="flex items-center text-sm text-gray-600 mb-4">
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <i class="fas fa-star text-yellow-400 mr-1"></i>
+                            <span class="ml-2">+19k stars GitHub</span>
+                        </div>
+                        <a href="https://www.babylonjs.com/" target="_blank" class="text-indigo-600 hover:text-indigo-800 font-medium">Visiter le site →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Comparaison 3DML vs Modernes -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Comparaison : 3DML vs Frameworks modernes</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="comparison-table">
+                    <tr>
+                        <th>Caractéristique</th>
+                        <th>3DML (2000)</th>
+                        <th>Frameworks modernes</th>
+                    </tr>
+                    <tr>
+                        <td>Syntaxe</td>
+                        <td>XML/HTML-like</td>
+                        <td>JavaScript (Three.js, Babylon.js) ou HTML-like (A-Frame)</td>
+                    </tr>
+                    <tr>
+                        <td>Rendu</td>
+                        <td>Plugin propriétaire (Flatland Rover)</td>
+                        <td>WebGL/WebGPU natif dans le navigateur</td>
+                    </tr>
+                    <tr>
+                        <td>Performance</td>
+                        <td>Limitée par la technologie de l'époque</td>
+                        <td>Haute performance, matériel accéléré</td>
+                    </tr>
+                    <tr>
+                        <td>Compatibilité</td>
+                        <td>Nécessitait l'installation d'un plugin</td>
+                        <td>Fonctionne sur tous les navigateurs modernes</td>
+                    </tr>
+                    <tr>
+                        <td>Communauté</td>
+                        <td>Petite communauté, projet fermé</td>
+                        <td>Grandes communautés open-source</td>
+                    </tr>
+                    <tr>
+                        <td>Fonctionnalités</td>
+                        <td>Basiques : formes, textures, lumières</td>
+                        <td>Avancées : shaders, physique, VR/AR, etc.</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Exemple A-Frame</h3>
+                    <div class="code-block">
+                        <pre><code>&lt;a-scene&gt;
+    &lt;a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"&gt;&lt;/a-box&gt;
+    &lt;a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"&gt;&lt;/a-sphere&gt;
+    &lt;a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"&gt;&lt;/a-cylinder&gt;
+    &lt;a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"&gt;&lt;/a-plane&gt;
+    &lt;a-sky color="#ECECEC"&gt;&lt;/a-sky&gt;
+&lt;/a-scene&gt;</code></pre>
+                    </div>
+                    <p class="text-gray-600 mt-2 text-sm">Notez la similarité conceptuelle avec 3DML, mais avec une implémentation moderne.</p>
+                </div>
+                <div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Exemple Three.js</h3>
+                    <div class="code-block">
+                        <pre><code>// Création d'une scène
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+
+// Création d'un cube
+const geometry = new THREE.BoxGeometry();
+const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+const cube = new THREE.Mesh(geometry, material);
+scene.add(cube);
+
+// Animation
+function animate() {
+    requestAnimationFrame(animate);
+    cube.rotation.x += 0.01;
+    cube.rotation.y += 0.01;
+    renderer.render(scene, camera);
+}
+animate();</code></pre>
+                    </div>
+                    <p class="text-gray-600 mt-2 text-sm">Approche plus programmatique que déclarative.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 8: Impact et héritage -->
+    <div class="slide">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-8">Impact et héritage de 3DML</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <div class="bg-white p-6 rounded-lg shadow-md mb-6">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Contributions importantes</h3>
+                        <ul class="list-disc pl-6 text-gray-700 space-y-2">
+                            <li><strong>Pionnier du 3D web</strong> : A démontré que le web pouvait être un support pour des mondes 3D</li>
+                            <li><strong>Approche déclarative</strong> : A inspiré des frameworks comme A-Frame</li>
+                            <li><strong>Optimisation réseau</strong> : Solutions pour des mondes 3D sur connexions lentes</li>
+                            <li><strong>Navigation intuitive</strong> : Modèles de navigation qui influencent encore les interfaces 3D</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div class="bg-indigo-50 p-6 rounded-lg border-l-4 border-indigo-500">
+                        <h3 class="text-2xl font-semibold text-indigo-800 mb-4">Leçons apprises</h3>
+                        <ul class="list-disc pl-6 text-indigo-700 space-y-2">
+                            <li>Les plugins propriétaires étaient une impasse pour le web ouvert</li>
+                            <li>La standardisation (WebGL) était nécessaire pour une adoption large</li>
+                            <li>L'approche déclarative (comme 3DML) reste valable pour certains cas d'usage</li>
+                            <li>La performance et l'accessibilité sont cruciales pour l'adoption</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-4">État actuel du 3D web</h3>
+                <p class="text-gray-700 mb-4">
+                    Aujourd'hui, le 3D sur le web repose sur des standards ouverts comme WebGL et bientôt WebGPU, avec des frameworks matures comme Three.js, Babylon.js et A-Frame.
+                </p>
+                <p class="text-gray-700">
+                    Les technologies comme WebXR permettent même des expériences de réalité virtuelle et augmentée directement dans le navigateur, réalisant enfin la vision que des pionniers comme 3DML avaient imaginée il y a plus de 20 ans.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: Conclusion -->
+    <div class="slide flex flex-col items-center justify-center text-center">
+        <div class="max-w-4xl mx-auto">
+            <h2 class="text-5xl font-bold text-indigo-700 mb-8">Conclusion</h2>
+            
+            <div class="bg-white p-8 rounded-lg shadow-xl mb-8">
+                <p class="text-xl text-gray-700 mb-6">
+                    3DML a été une technologie pionnière qui a ouvert la voie au 3D sur le web, avec une approche innovante mais limitée par la nécessité d'un plugin propriétaire.
+                </p>
+                <p class="text-xl text-gray-700 mb-6">
+                    Les frameworks modernes comme Three.js, Babylon.js et A-Frame réalisent aujourd'hui cette vision avec des standards ouverts, des performances accrues et une adoption massive.
+                </p>
+                <p class="text-xl text-gray-700">
+                    L'histoire de 3DML nous rappelle l'importance des standards ouverts et de l'évolution constante des technologies web.
+                </p>
+            </div>
+            
+            <div class="flex justify-center space-x-4">
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">3DML</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">Flatland Rover</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">WebGL</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">Three.js</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">A-Frame</span>
+                <span class="px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full">Babylon.js</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple script pour ajouter des animations lors du défilement
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
                 });
-            }
+            }, { threshold: 0.1 });
+
+            // Appliquer l'animation à tous les éléments avec la classe 'slide'
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.style.opacity = 0;
+                slide.style.transform = 'translateY(20px)';
+                slide.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(slide);
+            });
         });
-        
-        // Fonction pour mettre à jour la carte
-        function updateMap(cityValue) {
-            if (!cityValue) return;
-            
-            const [cityName, lat, lng] = cityValue.split(',');
-            const latNum = parseFloat(lat);
-            const lngNum = parseFloat(lng);
-            
-            // Mise à jour de la vue de la carte
-            map.setView([latNum, lngNum], 13);
-            
-            // Suppression du marqueur existant, s'il y en a un
-            if (marker) {
-                map.removeLayer(marker);
-            }
-            
-            // Ajout d'un nouveau marqueur
-            const customIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-orange.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            
-            marker = L.marker([latNum, lngNum], {icon: customIcon}).addTo(map)
-                .bindPopup(`<div style="font-weight:bold;font-size:16px;color:#FF8C00;">${cityName}</div>
-                <button onclick="setAsStart('${cityName}', ${latNum}, ${lngNum})" style="margin-top:5px;padding:3px 6px;background:#00843D;color:white;border:none;border-radius:4px;cursor:pointer;margin-right:5px;">Point de départ</button>
-                <button onclick="setAsEnd('${cityName}', ${latNum}, ${lngNum})" style="margin-top:5px;padding:3px 6px;background:#FF8C00;color:white;border:none;border-radius:4px;cursor:pointer;">Point d'arrivée</button>`).openPopup();
-        }
-        
-        // Fonction pour définir un point comme point de départ
-        window.setAsStart = function(name, lat, lng) {
-            document.getElementById('start-point').value = name;
-            startPoint = [lat, lng];
-            
-            // Ajout d'un marqueur pour le point de départ
-            if (startMarker) {
-                map.removeLayer(startMarker);
-            }
-            
-            const startIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            
-            startMarker = L.marker([lat, lng], {icon: startIcon}).addTo(map)
-                .bindPopup(`<div style="font-weight:bold;color:#00843D;">Point de départ: ${name}</div>`);
-            
-            // Calculer l'itinéraire si les deux points sont définis
-            if (startPoint && endPoint) {
-                calculateRoute();
-            }
-        };
-        
-        // Fonction pour définir un point comme point d'arrivée
-        window.setAsEnd = function(name, lat, lng) {
-            document.getElementById('end-point').value = name;
-            endPoint = [lat, lng];
-            
-            // Ajout d'un marqueur pour le point d'arrivée
-            if (endMarker) {
-                map.removeLayer(endMarker);
-            }
-            
-            const endIcon = L.icon({
-                iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-                iconSize: [25, 41],
-                iconAnchor: [12, 41],
-                popupAnchor: [1, -34],
-                shadowSize: [41, 41]
-            });
-            
-            endMarker = L.marker([lat, lng], {icon: endIcon}).addTo(map)
-                .bindPopup(`<div style="font-weight:bold;color:#d9534f;">Point d'arrivée: ${name}</div>`);
-            
-            // Calculer l'itinéraire si les deux points sont définis
-            if (startPoint && endPoint) {
-                calculateRoute();
-            }
-        };
-        
-        // Fonction pour calculer l'itinéraire
-        function calculateRoute() {
-            if (!startPoint || !endPoint) {
-                alert("Veuillez sélectionner un point de départ et un point d'arrivée.");
-                return;
-            }
-            
-            // Supprimer l'itinéraire existant s'il y en a un
-            if (routeControl) {
-                map.removeControl(routeControl);
-            }
-            
-            // Créer un nouvel itinéraire
-            routeControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(startPoint[0], startPoint[1]),
-                    L.latLng(endPoint[0], endPoint[1])
-                ],
-                routeWhileDragging: true,
-                lineOptions: {
-                    styles: [
-                        {color: '#FF8C00', opacity: 0.8, weight: 5}
-                    ]
-                },
-                createMarker: function() { return null; }, // Ne pas créer de marqueurs supplémentaires
-                addWaypoints: false,
-                draggableWaypoints: false,
-                language: 'fr',
-                show: false // Ne pas afficher le panneau d'instructions par défaut
-            }).addTo(map);
-            
-            // Ajuster la vue pour afficher tout l'itinéraire
-            routeControl.on('routesfound', function(e) {
-                const routes = e.routes;
-                const summary = routes[0].summary;
-                
-                // Créer une popup avec les informations sur l'itinéraire
-                let distanceInKm = (summary.totalDistance / 1000).toFixed(1);
-                let timeInHours = Math.floor(summary.totalTime / 3600);
-                let timeInMinutes = Math.floor((summary.totalTime % 3600) / 60);
-                
-                let popupContent = `
-                    <div style="text-align:center;font-weight:bold;margin-bottom:5px;">Informations sur l'itinéraire</div>
-                    <div>Distance: ${distanceInKm} km</div>
-                    <div>Durée estimée: ${timeInHours}h ${timeInMinutes}min</div>
-                `;
-                
-                L.popup()
-                    .setLatLng([(startPoint[0] + endPoint[0]) / 2, (startPoint[1] + endPoint[1]) / 2])
-                    .setContent(popupContent)
-                    .openOn(map);
-                
-                // Ajuster la vue pour montrer tout l'itinéraire
-                const bounds = L.latLngBounds(startPoint, endPoint);
-                map.fitBounds(bounds, {padding: [50, 50]});
-            });
-        }
-        
-        // Écouteur d'événements pour le changement de liste déroulante
-        citySelect.addEventListener('change', function() {
-            updateMap(this.value);
-        });
-        
-        // Fonctionnalité de recherche
-        const searchInput = document.getElementById('location-search');
-        const searchButton = document.getElementById('search-button');
-        const searchResults = document.getElementById('search-results');
-        const noResultsMessage = document.getElementById('no-results');
-        
-        // Fonction pour effectuer la recherche
-        function performSearch() {
-            const query = searchInput.value.trim().toLowerCase();
-            if (!query) {
-                searchResults.style.display = 'none';
-                return;
-            }
-            
-            // Filtrage des villes en fonction de la requête de recherche
-            const matchingCities = cityData.filter(city => 
-                city.name.toLowerCase().includes(query) || 
-                city.district.toLowerCase().includes(query)
-            );
-            
-            // Affichage des résultats de recherche
-            searchResults.innerHTML = '';
-            if (matchingCities.length === 0) {
-                noResultsMessage.style.display = 'block';searchResults.appendChild(noResultsMessage);
-            searchResults.style.display = 'block';
-        } else {
-            noResultsMessage.style.display = 'none';
-            
-            matchingCities.forEach(city => {
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.textContent = `${city.name} (${city.district})`;
-                resultItem.addEventListener('click', function() {
-                    updateMap(city.value);
-                    searchInput.value = city.name;
-                    searchResults.style.display = 'none';
-                    
-                    // Mise à jour de la liste déroulante pour correspondre à la ville sélectionnée
-                    citySelect.value = city.value;
-                });
-                searchResults.appendChild(resultItem);
-            });
-            
-            searchResults.style.display = 'block';
-        }
-    }
-    
-    // Écouteurs d'événements pour la recherche
-    searchButton.addEventListener('click', performSearch);
-    searchInput.addEventListener('keyup', function(event) {
-        if (event.key === 'Enter') {
-            performSearch();
-        } else if (searchInput.value.trim().length >= 2) {
-            performSearch();
-        } else {
-            searchResults.style.display = 'none';
-        }
-    });
-    
-    // Masquer les résultats de recherche lors du clic en dehors
-    document.addEventListener('click', function(event) {
-        if (!searchResults.contains(event.target) && event.target !== searchInput && event.target !== searchButton) {
-            searchResults.style.display = 'none';
-        }
-    });
-    
-    // Écouteurs d'événements pour le calcul d'itinéraire
-    document.getElementById('calculate-route').addEventListener('click', calculateRoute);
-    document.getElementById('clear-route').addEventListener('click', function() {
-        // Supprimer l'itinéraire existant s'il y en a un
-        if (routeControl) {
-            map.removeControl(routeControl);
-            routeControl = null;
-        }
-        
-        // Supprimer les marqueurs de départ et d'arrivée
-        if (startMarker) {
-            map.removeLayer(startMarker);
-            startMarker = null;
-        }
-        
-        if (endMarker) {
-            map.removeLayer(endMarker);
-            endMarker = null;
-        }
-        
-        // Réinitialiser les champs d'entrée
-        document.getElementById('start-point').value = '';
-        document.getElementById('end-point').value = '';
-        startPoint = null;
-        endPoint = null;
-    });
-    
-    // Ajouter un écouteur d'événements sur la carte pour permettre à l'utilisateur de sélectionner des points
-    map.on('click', function(e) {
-        // Si aucun champ n'est actuellement focalisé, ne rien faire
-        const startInput = document.getElementById('start-point');
-        const endInput = document.getElementById('end-point');
-        
-        if (document.activeElement !== startInput && document.activeElement !== endInput) {
-            return;
-        }
-        
-        const lat = e.latlng.lat;
-        const lng = e.latlng.lng;
-        
-        // Chercher la ville la plus proche (simplification)
-        let closestCity = null;
-        let minDistance = Infinity;
-        
-        cityData.forEach(city => {
-            const distance = Math.sqrt(
-                Math.pow(city.lat - lat, 2) + 
-                Math.pow(city.lng - lng, 2)
-            );
-            
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestCity = city;
-            }
-        });
-        
-        // Si une ville est trouvée
-        if (closestCity) {
-            // Si le champ de départ est focalisé
-            if (document.activeElement === startInput) {
-                setAsStart(closestCity.name, closestCity.lat, closestCity.lng);
-            } 
-            // Si le champ d'arrivée est focalisé
-            else if (document.activeElement === endInput) {
-                setAsEnd(closestCity.name, closestCity.lat, closestCity.lng);
-            }
-        }
-    });
-    
-    // Initialiser la carte avec une ville par défaut (Yamoussoukro - capitale politique)
-    updateMap('Yamoussoukro,6.8200,-5.2776');
-    citySelect.value = 'Yamoussoukro,6.8200,-5.2776';
-    
-    // Ajouter une couche pour les informations sur les villes importantes
-    const importantCities = [
-        {name: "Abidjan", description: "Capitale économique et plus grande ville", lat: 5.35976, lng: -4.00838},
-        {name: "Yamoussoukro", description: "Capitale politique", lat: 6.8200, lng: -5.2776},
-        {name: "Bouaké", description: "Deuxième plus grande ville", lat: 7.6891, lng: -5.0284},
-        {name: "Korhogo", description: "Principale ville du nord", lat: 9.4581, lng: -5.6316},
-        {name: "San-Pédro", description: "Deuxième port du pays", lat: 4.7590, lng: -6.6464}
-    ];
-    
-    // Ajouter des marqueurs pour ces villes importantes avec un style différent
-    importantCities.forEach(city => {
-        const icon = L.divIcon({
-            className: 'important-city-marker',
-            html: `<div style="background-color: rgba(0, 132, 61, 0.7); color: white; padding: 5px; border-radius: 5px; font-weight: bold; font-size: 12px; text-align: center;">${city.name}</div>`,
-            iconSize: [100, 30],
-            iconAnchor: [50, 15]
-        });
-        
-        L.marker([city.lat, city.lng], {icon: icon}).addTo(map)
-            .bindPopup(`<div style="font-weight:bold;color:#00843D;">${city.name}</div><div>${city.description}</div>`);
-    });
-    
-    // Ajouter un contrôle d'échelle à la carte
-    L.control.scale({imperial: false, metric: true}).addTo(map);
-    
-    // Fonction pour ajouter une bordure autour de la Côte d'Ivoire
-    // Note: Ceci est une simplification, les coordonnées réelles seraient plus précises
-    const ivoryCoastBorder = [
-        [10.740, -8.140], // Nord-ouest
-        [10.740, -2.494], // Nord-est
-        [4.352, -2.510], // Sud-est
-        [4.340, -7.540], // Sud-ouest
-        [10.740, -8.140]  // Refermer la frontière
-    ];
-    
-    L.polyline(ivoryCoastBorder, {
-        color: '#00843D',
-        weight: 3,
-        opacity: 0.7,
-        dashArray: '5, 10'
-    }).addTo(map);
-    
-    // Ajouter la légende
-    const legend = L.control({position: 'bottomright'});
-    legend.onAdd = function() {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.style.padding = '10px';
-        div.style.background = 'white';
-        div.style.borderRadius = '8px';
-        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
-        div.style.border = '1px solid #ddd';
-        div.style.fontSize = '14px';
-        
-        div.innerHTML = `
-            <div style="font-weight:bold;margin-bottom:8px;color:#00843D;">Légende</div>
-            <div style="margin-bottom:5px;"><span style="display:inline-block;width:12px;height:12px;background-color:#FF8C00;border-radius:50%;margin-right:5px;"></span> Ville sélectionnée</div>
-            <div style="margin-bottom:5px;"><span style="display:inline-block;width:12px;height:12px;background-color:#00843D;border-radius:50%;margin-right:5px;"></span> Point de départ</div>
-            <div style="margin-bottom:5px;"><span style="display:inline-block;width:12px;height:12px;background-color:#d9534f;border-radius:50%;margin-right:5px;"></span> Point d'arrivée</div>
-            <div><span style="display:inline-block;width:12px;height:3px;background-color:#FF8C00;margin-right:5px;"></span> Itinéraire</div>
-        `;
-        
-        return div;
-    };
-    legend.addTo(map);
-</script>
+    </script>
 </body>
-</html> 
+</html>
